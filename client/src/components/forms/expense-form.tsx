@@ -57,7 +57,7 @@ export default function ExpenseForm({
       expenseTypeId: expense?.expenseTypeId || "",
       amount: expense ? Number(expense.amount) : 0,
       description: expense?.description || "",
-      expenseDate: expense ? expense.expenseDate.split('T')[0] : new Date().toISOString().split('T')[0],
+      expenseDate: expense ? new Date(expense.expenseDate).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
     },
   });
 
@@ -230,7 +230,7 @@ export default function ExpenseForm({
         </div>
 
         <div>
-          <Label htmlFor="amount">Amount</Label>
+          <Label htmlFor="amount">Amount (₹)</Label>
           <Input
             id="amount"
             type="number"
@@ -282,7 +282,7 @@ export default function ExpenseForm({
           <div>
             <span className="text-gray-600">Amount:</span>
             <span className="ml-2 font-medium">
-              ${expenseForm.watch("amount") ? Number(expenseForm.watch("amount")).toFixed(2) : "0.00"}
+              ₹{expenseForm.watch("amount") ? Number(expenseForm.watch("amount")).toFixed(2) : "0.00"}
             </span>
           </div>
           <div>

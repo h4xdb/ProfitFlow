@@ -95,22 +95,39 @@ export default function Sidebar() {
 
       {/* Navigation */}
       <nav className="flex-1 p-4 space-y-2 overflow-y-auto">
-        {filteredNavigation.map((item) => {
+        {filteredNavigation.map((item, index) => {
           const isActive = location === item.href;
+          const isAfterManagement = item.roles.includes("admin") && item.name === "User Management";
+          
           return (
-            <Link key={item.name} href={item.href}>
-              <a
-                className={cn(
-                  "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors",
-                  isActive
-                    ? "bg-primary-100 text-primary-700 font-medium"
-                    : "text-gray-700 hover:bg-gray-100"
-                )}
-              >
-                <i className={`${item.icon} w-5`}></i>
-                <span>{item.name}</span>
-              </a>
-            </Link>
+            <div key={item.name}>
+              <Link href={item.href}>
+                <a
+                  className={cn(
+                    "flex items-center space-x-3 px-3 py-2 rounded-lg transition-colors",
+                    isActive
+                      ? "bg-primary-100 text-primary-700 font-medium"
+                      : "text-gray-700 hover:bg-gray-100"
+                  )}
+                >
+                  <i className={`${item.icon} w-5`}></i>
+                  <span>{item.name}</span>
+                </a>
+              </Link>
+              
+              {/* Show logout after User Management for admin/manager */}
+              {isAfterManagement && (user.role === "admin" || user.role === "manager") && (
+                <div className="mt-2">
+                  <button
+                    onClick={logout}
+                    className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors text-sm"
+                  >
+                    <i className="fas fa-sign-out-alt"></i>
+                    <span>Logout</span>
+                  </button>
+                </div>
+              )}
+            </div>
           );
         })}
         
@@ -125,18 +142,20 @@ export default function Sidebar() {
           <span>Public Reports</span>
           <i className="fas fa-external-link-alt text-xs ml-auto"></i>
         </a>
+        
+        {/* Logout for cash collectors (at bottom) */}
+        {user.role === "cash_collector" && (
+          <div className="mt-4">
+            <button
+              onClick={logout}
+              className="w-full flex items-center justify-center space-x-2 px-3 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors text-sm"
+            >
+              <i className="fas fa-sign-out-alt"></i>
+              <span>Logout</span>
+            </button>
+          </div>
+        )}
       </nav>
-
-      {/* Logout Button */}
-      <div className="p-4">
-        <button
-          onClick={logout}
-          className="w-full flex items-center justify-center space-x-2 px-4 py-2 bg-red-50 text-red-600 rounded-lg hover:bg-red-100 transition-colors"
-        >
-          <i className="fas fa-sign-out-alt"></i>
-          <span>Logout</span>
-        </button>
-      </div>
     </div>
   );
 }

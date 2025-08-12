@@ -1,3 +1,4 @@
+import { useEffect } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { useMutation, useQuery, useQueryClient } from "@tanstack/react-query";
@@ -63,8 +64,8 @@ export default function ReceiptForm({ receipt, receiptBooks, tasks, onSuccess }:
   });
 
   // Update receipt number when book changes (for new receipts only)
-  React.useEffect(() => {
-    if (!receipt && nextNumberData?.nextReceiptNumber) {
+  useEffect(() => {
+    if (!receipt && nextNumberData && 'nextReceiptNumber' in nextNumberData) {
       form.setValue("receiptNumber", nextNumberData.nextReceiptNumber);
     }
   }, [nextNumberData, receipt, form]);
@@ -108,7 +109,7 @@ export default function ReceiptForm({ receipt, receiptBooks, tasks, onSuccess }:
   const selectedTask = tasks.find(task => task.id === form.watch("taskId"));
 
   // Auto-select task when receipt book changes
-  React.useEffect(() => {
+  useEffect(() => {
     if (selectedBook && selectedBook.taskId !== form.watch("taskId")) {
       form.setValue("taskId", selectedBook.taskId);
     }
@@ -228,7 +229,7 @@ export default function ReceiptForm({ receipt, receiptBooks, tasks, onSuccess }:
       </div>
 
       <div>
-        <Label htmlFor="amount">Amount *</Label>
+        <Label htmlFor="amount">Amount (₹) *</Label>
         <Input
           id="amount"
           type="number"
@@ -262,7 +263,7 @@ export default function ReceiptForm({ receipt, receiptBooks, tasks, onSuccess }:
             <div>
               <span className="text-gray-600">Amount:</span>
               <span className="ml-2 font-medium">
-                ${form.watch("amount") ? Number(form.watch("amount")).toFixed(2) : "0.00"}
+                ₹{form.watch("amount") ? Number(form.watch("amount")).toFixed(2) : "0.00"}
               </span>
             </div>
           </div>
