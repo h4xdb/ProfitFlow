@@ -65,8 +65,9 @@ export default function ReceiptForm({ receipt, receiptBooks, tasks, onSuccess }:
 
   // Update receipt number when book changes (for new receipts only)
   useEffect(() => {
-    if (!receipt && nextNumberData && 'nextReceiptNumber' in nextNumberData) {
-      form.setValue("receiptNumber", nextNumberData.nextReceiptNumber);
+    if (!receipt && nextNumberData && typeof nextNumberData === 'object' && 'nextReceiptNumber' in nextNumberData) {
+      const receiptNumber = (nextNumberData as { nextReceiptNumber: number }).nextReceiptNumber;
+      form.setValue("receiptNumber", receiptNumber);
     }
   }, [nextNumberData, receipt, form]);
 

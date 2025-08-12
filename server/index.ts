@@ -46,7 +46,7 @@ app.use((req, res, next) => {
       const { seedDatabase } = await import('./seed.js');
       await seedDatabase();
     } catch (error) {
-      log('Database seeding skipped or failed:', error);
+      log('Database seeding skipped or failed:', String(error));
     }
   }
 

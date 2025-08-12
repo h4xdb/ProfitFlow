@@ -162,14 +162,14 @@ export default function ReceiptBookForm({ receiptBook, tasks, users, onSuccess }
         <div>
           <Label htmlFor="assignedTo">Assign to Cash Collector</Label>
           <Select
-            value={form.watch("assignedTo") || ""}
-            onValueChange={(value) => form.setValue("assignedTo", value || undefined)}
+            value={form.watch("assignedTo") || "unassigned"}
+            onValueChange={(value) => form.setValue("assignedTo", value === "unassigned" ? undefined : value)}
           >
             <SelectTrigger>
               <SelectValue placeholder="Select collector (optional)" />
             </SelectTrigger>
             <SelectContent>
-              <SelectItem value="">Unassigned</SelectItem>
+              <SelectItem value="unassigned">Unassigned</SelectItem>
               {cashCollectors.map((user) => (
                 <SelectItem key={user.id} value={user.id}>
                   {user.fullName} ({user.username})
