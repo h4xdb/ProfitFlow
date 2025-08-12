@@ -63,7 +63,7 @@ export async function seedDatabase() {
         const hashedPassword = await bcrypt.hash(userData.password, 10);
         await db.insert(users).values({
           username: userData.username,
-          passwordHash: hashedPassword,
+          password: hashedPassword,
           fullName: userData.fullName,
           role: userData.role,
           isActive: true,
@@ -74,42 +74,54 @@ export async function seedDatabase() {
       }
     }
 
-    // Create default tasks
+    // Create default tasks  
     console.log("Creating default donation categories...");
-    for (const taskData of defaultTasks) {
-      const existingTask = await db.query.tasks.findFirst({
-        where: (tasks, { eq }) => eq(tasks.name, taskData.name),
-      });
+    const adminUser = await db.query.users.findFirst({
+      where: (users, { eq }) => eq(users.username, "admin"),
+    });
 
-      if (!existingTask) {
-        await db.insert(tasks).values({
-          ...taskData,
-          status: "active" as const,
-          createdBy: "admin", // Use admin as creator
+    if (adminUser) {
+      for (const taskData of defaultTasks) {
+        const existingTask = await db.query.tasks.findFirst({
+          where: (tasks, { eq }) => eq(tasks.name, taskData.name),
         });
-        console.log(`Created task: ${taskData.name}`);
-      } else {
-        console.log(`Task ${taskData.name} already exists, skipping...`);
+
+        if (!existingTask) {
+          await db.insert(tasks).values({
+            ...taskData,
+            status: "active" as const,
+            createdBy: adminUser.id, // Use admin user ID as creator
+          });
+          console.log(`Created task: ${taskData.name}`);
+        } else {
+          console.log(`Task ${taskData.name} already exists, skipping...`);
+        }
       }
+    } else {
+      console.log("Admin user not found, skipping task creation");
     }
 
     // Create default expense types
     console.log("Creating default expense types...");
-    for (const expenseTypeData of defaultExpenseTypes) {
-      const existingExpenseType = await db.query.expenseTypes.findFirst({
-        where: (expenseTypes, { eq }) => eq(expenseTypes.name, expenseTypeData.name),
-      });
-
-      if (!existingExpenseType) {
-        await db.insert(expenseTypes).values({
-          ...expenseTypeData,
-          status: "active" as const,
-          createdBy: "admin", // Use admin as creator
+    if (adminUser) {
+      for (const expenseTypeData of defaultExpenseTypes) {
+        const existingExpenseType = await db.query.expenseTypes.findFirst({
+          where: (expenseTypes, { eq }) => eq(expenseTypes.name, expenseTypeData.name),
         });
-        console.log(`Created expense type: ${expenseTypeData.name}`);
-      } else {
-        console.log(`Expense type ${expenseTypeData.name} already exists, skipping...`);
+
+        if (!existingExpenseType) {
+          await db.insert(expenseTypes).values({
+            ...expenseTypeData,
+            status: "active" as const,
+            createdBy: adminUser.id, // Use admin user ID as creator
+          });
+          console.log(`Created expense type: ${expenseTypeData.name}`);
+        } else {
+          console.log(`Expense type ${expenseTypeData.name} already exists, skipping...`);
+        }
       }
+    } else {
+      console.log("Admin user not found, skipping expense type creation");
     }
 
     console.log("Database seeding completed successfully!");
